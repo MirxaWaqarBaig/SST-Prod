@@ -1,0 +1,23 @@
+FROM python:3.10.12-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y ffmpeg
+
+# Copy requirements first for better layer caching
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy model files explicitly
+COPY whisper-finetuned-final/ /app/whisper-finetuned-final/
+COPY processor_files/ /app/processor_files/
+
+# Copy application code
+COPY speech_server_finetune.py /app/
+
+# Set environment variables (optional)
+ENV MODEL_PATH=/app/whisper-finetuned-final
+ENV PROCESSOR_PATH=/app/processor_files
+
+CMD ["python", "speech_server_finetune.py"]

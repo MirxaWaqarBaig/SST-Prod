@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  broker:
+    image: ss-broker
+    container_name: stt-broker
+    ports:
+      - "5559:5559"
+      - "5560:5560"
+    environment:
+      - ZMQ_FRONTEND_ROUTER_PORT=5559
+      - ZMQ_BACKEND_ROUTER_PORT=5560
+    networks:
+      - stt-network
+
+  stt-server:
+    image: ss-whisper
+    container_name: whisper-stt
+    environment:
+      - DEVICE=cuda
+      - ZMQ_BACKEND_ROUTER_URL=tcp://stt-broker:5560
+      - MODEL_PATH=/app/whisper-finetuned-final
+      - PROCESSOR_PATH=/app/processor_files
+    depends_on:
+      - broker
+    networks:
+      - stt-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  gateway:
+    image: ss-gateway
+    container_name: stt-gateway
+    ports:
+      - "8000:8008"
+    environment:
+      - ZMQ_FRONTEND_ROUTER_URL=tcp://stt-broker:5559
+    depends_on:
+      - broker
+      - stt-server
+    networks:
+      - stt-network
+
+networks:
+  stt-network:
+    driver: bridge
