@@ -68,7 +68,17 @@ cd <gateway-repo>
 docker build -t ss-gateway .
 ```
 
-### 3. Build STT Service Image
+### 3. Download Model Files
+
+Download the required model files from Google Drive:
+
+**Download Link**: [https://drive.google.com/file/d/1XQezBUMg-KBpmi8dlT3Dx59OhIU6OBfD/view?usp=sharing](https://drive.google.com/file/d/1XQezBUMg-KBpmi8dlT3Dx59OhIU6OBfD/view?usp=sharing)
+
+After downloading, extract the files to the SST-Prod directory. You should have:
+- `whisper-finetuned-final/` folder with the fine-tuned model files
+- `processor_files/` folder with tokenizer and processor files
+
+### 4. Build STT Service Image
 
 From the SST-Prod directory:
 
@@ -77,14 +87,14 @@ From the SST-Prod directory:
 docker build -f Dockerfile.STT -t ss-whisper .
 ```
 
-### 4. Verify Model Files
+### 5. Verify Model Files
 
 Ensure the following directories contain the required files:
 
 - `whisper-finetuned-final/`: Should contain the fine-tuned model files
 - `processor_files/`: Should contain tokenizer and processor files
 
-### 5. Run the Services
+### 6. Run the Services
 
 Start all services using Docker Compose:
 
@@ -96,7 +106,7 @@ docker-compose -f docker-compose_STT.yml up -d
 docker-compose -f docker-compose_STT.yml logs -f
 ```
 
-### 6. Verify Deployment
+### 7. Verify Deployment
 
 Check that all services are running:
 
